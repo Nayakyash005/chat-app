@@ -1,12 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import Home from "./Home";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
-    <App />
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chat" element={<App />} />
+        {/* <Route path="/delete" element={<Add />} /> */}
+      </Routes>
+    </Router>
   </>
 );
 

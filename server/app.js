@@ -3,6 +3,7 @@ import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
 import { Socket } from "socket.io-client";
+import pg from "pg";
 
 const port = 5000;
 const app = express();
@@ -14,6 +15,15 @@ const io = new Server(server, {
     methods: ["GET", ["POST"]],
     credentials: true,
   },
+});
+
+const db = new pg.Client({
+  database: "world",
+  host: "localhost",
+  port: 5432,
+  password: "123456",
+  user: "postgres",
+  // Define baseurl
 });
 
 io.on("connection", (socket) => {
