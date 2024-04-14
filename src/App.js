@@ -11,20 +11,17 @@ function App() {
   const [room, setRoom] = useState("");
   const [socketID, setSocketID] = useState("");
   const [texts, setTexts] = useState([]);
-  const [nameMap, setnameMap] = useState([]);
+  const [nameMap, setnameMap] = useState("");
   const handleForm = (e) => {
     e.preventDefault();
     const object = { message, room, nameMap, socketID };
     socket.emit("message", object);
-    setTexts((texts) => [
-      ...texts,
-      { message, name: { n: nameMap.socketID }, socketID },
-    ]);
+    setTexts((texts) => [...texts, { message, nameMap, socketID }]);
     setMessage("");
   };
 
   function setname(name) {
-    setnameMap({ socketID: name });
+    setnameMap(name);
   }
 
   useEffect(() => {
@@ -113,7 +110,7 @@ function App() {
               key={i}
               className="text-xl py-2 px-4 rounded-lg bg-gray-100 max-w-md"
             >
-              <span className="text-blue-600 font-bold">{m.name.n}:</span>{" "}
+              <span className="text-blue-600 font-bold">{m.nameMap}:</span>{" "}
               {m.message}
             </p>
           )
