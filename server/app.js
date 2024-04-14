@@ -30,7 +30,9 @@ io.on("connection", (socket) => {
       "---->user message is :",
       object.message,
       "room id",
-      object.room
+      object.room,
+      "NAME IS ",
+      object.nameMap
     );
     socket.to(object.room).emit("receive-message", object); // Corrected typo in event name
   });
