@@ -107,6 +107,15 @@ app.post("/add", async (req, res) => {
   }
 });
 
+//*****************to get the name of current user */
+app.get("/myName/:id", async (req, res) => {
+  const id = req.params.id;
+  console.log("userid is", id);
+  const data = await db.query("select name from appuser where phone= $1", [id]);
+  console.log("current user is ", data.rows[0]);
+  res.json(data.rows[0]);
+});
+
 app.get("/userList", async (req, res) => {
   const result = await db.query("select * from appuser");
   console.log(result.rows);

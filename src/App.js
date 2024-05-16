@@ -1,5 +1,3 @@
-// App.js
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { FaUser } from "react-icons/fa";
@@ -9,11 +7,11 @@ import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 
 function App() {
   const socket = useMemo(() => io("http://localhost:5000"), []);
-
   const [socketID, setSocketID] = useState("");
   const [texts, setTexts] = useState([]);
   const [users, setusers] = useState([]);
-  const [phone, setphone] = useState("");
+  const [selfName, setselfName] = useState("");
+  const [phone, setphone] = useState([]);
   const [activeuser, setactiveuser] = useState(undefined);
   const [click, setclick] = useState(false);
 
@@ -26,14 +24,27 @@ function App() {
     }
   }
 
+  async function get_your_name(id) {
+    if (!id) {
+      console.log("chala hi nahi");
+      return;
+    }
+    console.log("id is", id);
+    const result = await axios.get("http://localhost:5000/myName/" + id);
+
+    console.log("current user is  :", result.data.name);
+    setselfName(result.data.name);
+  }
   useEffect(() => {
     const phone = localStorage.getItem("phone");
+    console.log("localstorage vala", phone);
     setphone(phone);
     if (!phone) {
       document.location = document.location.origin;
     }
     socket.on("connect", () => {
       setSocketID(socket.id);
+      get_your_name(phone);
       console.log("user is", socket.id);
       socket.emit("init", { phone, name: "Yash" });
     });
@@ -54,9 +65,16 @@ function App() {
         {/* Users list on the left */}
         <div className="flex flex-col h-screen w-1/3 bg-blue-100 p-6">
           {/* User items */}
-          <h2 className="text-3xl">
-            List of <span className="text-blue-500">Users</span>{" "}
-          </h2>
+          <div className="flex gap-5">
+            <h2 className="text-3xl pr-8">
+              List of <span className="text-blue-500">Users</span>{" "}
+            </h2>
+
+            <div className="pl-8 text-3xl">
+              <div className="text-3xl">Welcome</div>
+              <div className="text-2xl text-blue-300">({selfName})</div>
+            </div>
+          </div>
           <br />
           <br />
 
@@ -76,7 +94,7 @@ function App() {
                 user.phone !== phone && (
                   <div
                     key={index}
-                    className="flex items-center mb-4 py-7 px-4 rounded-lg bg-blue-200"
+                    className="flex items-center mb-4 py-7 px-4 rounded-lg bg-blue-200  hover:cursor-pointer hover:scale-105"
                     onClick={() => {
                       setactiveuser(user);
                       setclick(true);

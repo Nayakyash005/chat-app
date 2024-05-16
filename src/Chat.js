@@ -9,14 +9,17 @@ import { cn } from "./util/cn";
 
 export default function Chat({ activeuser, myphone }) {
   const socket = useMemo(() => io("http://localhost:5000"), [activeuser.phone]);
-  const [socketID, setSocketID] = useState("");
   const [texts, setTexts] = useState([]);
   const scrollmsg = useRef();
+  const [info, setinfo] = useState(false);
+
+  function showinfo() {
+    setinfo((e) => !e);
+  }
   const sendMessage = (message) => {
     const object = {
       name: activeuser.name,
       to_id: activeuser.phone,
-
       message_text: message,
       from_id: myphone,
     };
@@ -30,23 +33,16 @@ export default function Chat({ activeuser, myphone }) {
       document.location = document.location.origin;
     }
     socket.on("connect", () => {
-      setSocketID(socket.id);
       console.log("user is", socket.id);
       socket.emit("init", { phone, name: "Yash", tophone: activeuser.phone });
     });
     socket.on("getAllMessage", (messages) => {
       console.log(messages);
       setTexts(messages);
-      if (scrollmsg.current) {
-        scrollmsg.current.scrollTop = scrollmsg.current.scrollHeight;
-      }
     });
     socket.on("receive-message", (object) => {
       setTexts((texts) => [...texts, object]);
       console.log("in recieve", object);
-      if (scrollmsg.current) {
-        scrollmsg.current.scrollTop = scrollmsg.current.scrollHeight;
-      }
     });
     console.log(activeuser);
 
@@ -73,7 +69,9 @@ export default function Chat({ activeuser, myphone }) {
             <IoChatboxEllipsesSharp />
           </div>
           <div className=" px-2 text-3xl">
-            <FaRegCircleUser />
+            <button onClick={showinfo}>
+              <FaRegCircleUser />
+            </button>
           </div>
           <div className="mr-4 px-2 text-3xl">
             <FaPhoneAlt />
@@ -82,6 +80,25 @@ export default function Chat({ activeuser, myphone }) {
       </nav>
 
       {/* Chat messages */}
+      {info && (
+        <div className="items-end right-0 pt-14">
+          <p className="absolute right-10">hello</p>
+          <div class=" absolute flex-col right-10 z-5 w-1/3 rounded items-end bg-blue-200 p-4 h-72">
+            <div class=" w-20  flex-col bg-blue-200 mt-12 scale-150 justify-center mx-auto rounded-full overflow-hidden">
+              <img
+                class="object-contain h-full w-full scale-110"
+                src="https://plus.unsplash.com/premium_vector-1683140924946-2ced6640e20a?bg=FFFFFF&q=80&w=1834&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt=""
+              />
+            </div>
+            <div className="absolute justify-center mx-auto pt-12 mr-10 w-full">
+              <h2>Users info</h2>
+              <p>This is some user information.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         ref={scrollmsg}
         className="text-section space-y-2 max-w-7xl h-max py-6 pb-32 border border-gray-300 p-4 mt-4 rounded overflow-y-auto"
